@@ -187,9 +187,9 @@ summary(results) #Accuracy y Kappa
 # ======================================================================================================================== #
 # Modelo Random Forest con hiper parámetros ajustados
 # ======================================================================================================================== #
-ntree_ajustado <- 250
-mtry_ajustado <- 10
-node_ajustado <- 2
+ntree_ajustado <- 250 # valores que varían de acuerdo con el mejor ajuste
+mtry_ajustado <- 10 # valores que varían de acuerdo con el mejor ajuste
+node_ajustado <- 2 # valores que varían de acuerdo con el mejor ajuste
 
 rf <- randomForest(x = train[,2:dim(train)[2]],
                     y = factor(train$cob),
