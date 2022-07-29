@@ -1,4 +1,9 @@
 # ======================================================================================================================== #
+# Prop贸sito: clasificar coberturas de la tierra usando Random Forest
+# ======================================================================================================================== #
+
+
+# ======================================================================================================================== #
 #  Limpieza de ambiente
 # ======================================================================================================================== #
 rm(list = ls())
@@ -6,7 +11,7 @@ rm(list = ls())
 
 
 # ======================================================================================================================== #
-#  Carga de librer韆s
+#  Carga de librer铆as
 # ======================================================================================================================== #
 pack <- c("raster","AppliedPredictiveModeling","rgdal",
           "maptools","caret","sp","randomForest","e1071",
@@ -27,7 +32,7 @@ rasterOptions(tmpdir = path)
 
 # Ruta del raster
 img <- raster::stack("T:/.../raster.tif")
-# Cambio de nombre de las bandas. El n鷐ero var韆 de acuerdo a las bandas de la imagen (1:n)
+# Cambio de nombre de las bandas. El n煤mero var铆a de acuerdo a las bandas de la imagen (1:n)
 names(img) <- paste0('band_',1:50)
 # datos de entrenamiento en formato csv
 # NOTA: Los datos de entrenamiento deben tener una columna llamada "cob", que debe tener las coberturas a mapear,
@@ -42,7 +47,7 @@ datos_csv <- read.csv("T:/.../entrenamiento.csv")
 datos_csv <- as.data.frame(datos_csv)
 # Columna objetivo (coberturas a mapear)
 datos_csv$cob <- as.factor(datos_csv$cob)
-# visualizaci髇 de datos
+# visualizaci贸n de datos
 head(datos_csv)
 
 
@@ -82,31 +87,31 @@ datos_csv <- rbind(cob_1,cob_2,cob_3,cob_4,cob_5,cob_6,cob_7,cob_8,cob_9,cob_10,
 
 
 # ======================================================================================================================== #
-# Preparaci髇 de la informaci髇 de entrenamiento
+# Preparaci贸n de la informaci贸n de entrenamiento
 # ======================================================================================================================== #
 seed <- set.seed(998)
-# separaci髇 de datos en entrenamiento y evaluaci髇 (70% entrenamiento / 30% evaluaci髇)
+# separaci贸n de datos en entrenamiento y evaluaci贸n (70% entrenamiento / 30% evaluaci贸n)
 inTraining <- createDataPartition(datos_csv$cob, p = .70, list = FALSE)
 
 # Entrenamiento
 train <- datos_csv[inTraining,]
-# Evaluaci髇
+# Evaluaci贸n
 test  <- datos_csv[-inTraining,]
 
 # Variables de entrenamiento
-train_variables <- train[,4:53] #Estos n鷐eros var韆n de acuerdo con la cantidad de variables
+train_variables <- train[,4:53] #Estos n煤meros var铆an de acuerdo con la cantidad de variables
 # Coberturas de entrenamiento
 train_target<- train$cob
 
-# Variables de evaluaci髇
-test_variables <- test[,4:53] #Estos n鷐eros var韆n de acuerdo con la cantidad de variables
-# Coberturas de evaluaci髇
+# Variables de evaluaci贸n
+test_variables <- test[,4:53] #Estos n煤meros var铆an de acuerdo con la cantidad de variables
+# Coberturas de evaluaci贸n
 test_target <- test$cob
 
 
 
 # ======================================================================================================================== #
-# Visualizaci髇 de la informaci髇
+# Visualizaci贸n de la informaci贸n
 # ======================================================================================================================== #
 # Cajas
 featurePlot(x = train_variables[,1:50], 
@@ -115,7 +120,7 @@ featurePlot(x = train_variables[,1:50],
             scales=list(x=list(relation="free"), y=list(relation="free")),
             ## Add a key at the top
             auto.key = list(columns = 9),
-            main = "Visualizaci髇 de variables ")
+            main = "Visualizaci贸n de variables ")
 
 # Densidad
 featurePlot(x = train_variables[,1:50], 
@@ -123,22 +128,22 @@ featurePlot(x = train_variables[,1:50],
             plot = "density",
             scales=list(x=list(relation="free"), y=list(relation="free")),
             ## Add a key at the top
-            main = "Visualizaci髇 de variables",
+            main = "Visualizaci贸n de variables",
             auto.key = list(columns = 9))
 
 
 
 # ======================================================================================================================== #
-# Selecci髇 de variables: Recursive Feature Elimination (RFE)
+# Selecci贸n de variables: Recursive Feature Elimination (RFE)
 # ======================================================================================================================== #
 set.seed(123)
-# Librer韆s
+# Librer铆as
 library(mlbench)
 library(caret)
 
 # Control
 control <- rfeControl(functions = rfFuncs, method = "cv", number = 5)
-# M閠odo RFE
+# M茅todo RFE
 result <- rfe(train_variables, train_target, rfeControl = control)
 #Predictores seleccionados
 predictors_seleted <- predictors(result)
@@ -158,21 +163,21 @@ dim(test)
 
 
 # ======================================================================================================================== #
-# Ajuste del modelo Random Forest: Librer韆 caret
+# Ajuste del modelo Random Forest: Librer铆a caret
 # ======================================================================================================================== #
-# Control de validac韔n cruzada
+# Control de validac铆on cruzada
 control_c <- trainControl(method = "cv", number = 2, search = "grid", verboseIter = T)
-# Hiperpar醡etros a evaluar
+# Hiperpar谩metros a evaluar
 tunegrid <- expand.grid(mtry = c(2, 5, 10, 20),
                         splitrule = "gini",
                         min.node.size = c(2, 5, 10))
 # Lista vacia para guardar modelos
 modellist <- list()
 
-# Prueba de todos los hiperpar醡etros
-for(i in c(250,500, 1000)){ #100 y 500 醨boles a evaluar
+# Prueba de todos los hiperpar谩metros
+for(i in c(250,500, 1000)){ #100 y 500 谩rboles a evaluar
   set.seed(123)
-  print(paste("Cantidad de 醨boles: ",i))
+  print(paste("Cantidad de 谩rboles: ",i))
   model <- caret::train(cob~., data = train, method = "ranger",
                         metric = "Accuracy", tuneGrid = tunegrid, trControl = control_c, 
                         num.trees= i,
@@ -182,9 +187,9 @@ for(i in c(250,500, 1000)){ #100 y 500 醨boles a evaluar
   
 }
 
-# Gr醘icos y tablas del ajuste
-plot(modellist$`100`) # Gr醘ico con cantidad #1 de 醨boles evaluados
-plot(modellist$`500`) # Gr醘ico con cantidad #2 de 醨boles evaluados
+# Gr谩ficos y tablas del ajuste
+plot(modellist$`100`) # Gr谩fico con cantidad #1 de 谩rboles evaluados
+plot(modellist$`500`) # Gr谩fico con cantidad #2 de 谩rboles evaluados
 results <- resamples(modellist)
 summary(results) #Accuracy y Kappa
 
@@ -192,7 +197,7 @@ summary(results) #Accuracy y Kappa
 
 
 # ======================================================================================================================== #
-# Modelo Random Forest con hiper par醡etros ajustados
+# Modelo Random Forest con hiper par谩metros ajustados
 # ======================================================================================================================== #
 ntree_ajustado <- 250
 mtry_ajustado <- 10
