@@ -3,7 +3,7 @@
 // - GEE: https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_CLOUD_PROBABILITY
 // Editado: Jorge Andres Perez Escobar
 // Contacto: j.perez@cgiar.org
-// Objetivo: Limpieza de nubes a traves de banda de colección de probabilidad de nubes y GCLM de Sentine-1
+// Objetivo: Limpieza de nubes a traves de banda de colección de probabilidad de nubes y creación de índices espectrales
 // - NOTAS:
 //  * Línea 38 y 39: selecionar el municipio a procesar (observar líneas 12 - 16)
 //  * Línea 190 y 191 : seleccinar las listas de acuerdo con el municipio que va a procesar (listas en líneas 169 - 187)
